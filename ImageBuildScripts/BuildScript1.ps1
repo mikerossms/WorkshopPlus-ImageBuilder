@@ -1,0 +1,1 @@
+Write-Verbose "Build script 1"

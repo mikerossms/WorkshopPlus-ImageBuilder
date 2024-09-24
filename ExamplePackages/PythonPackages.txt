@@ -1,0 +1,4 @@
+# Analyst desktop module requirements
+wheel
+pandas
+requests
