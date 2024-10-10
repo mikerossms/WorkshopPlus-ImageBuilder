@@ -98,7 +98,7 @@ foreach ($file in $files) {
     $blobName = $file.Name
 
     Write-Verbose "Uploading $blobName to $softwareContainer in $storageAccountName"
-    Set-AzStorageBlobContent -File $filePath -Container $softwareContainer -Blob $blobName -Context $stContainerContext.Context -
+    Set-AzStorageBlobContent -File $filePath -Container $softwareContainer -Blob $blobName -Context $stContainerContext.Context
 }
 
 Write-Output "All files uploaded successfully"

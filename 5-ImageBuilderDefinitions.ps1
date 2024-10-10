@@ -6,6 +6,11 @@ param (
 
 $VerbosePreference = "Continue"
 
+# This script is for deploying the image specific components via Bicep - each image may have a different setup, different operating system etc. so this script is likely to be different for each image
+# this script does not modify the base image in any way.  this is done in the next stage when you build the image - this only deploys the Azure infra required to enable the image to be built
+
+#TODO: build the Bicep and update this script
+
 ###############################
 # Read in the configuration   #
 ###############################
@@ -80,92 +85,31 @@ if (-not (Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue)) {
 #Get the current time in hhmmss format
 $currentTime = Get-Date -Format "HHmmss"
 
-###############################
-# Do the deployment           # 
-###############################
-
-#############################################
-#Check we have the right providers registered
-#############################################
-$requiredProviders = @(
-    "Microsoft.ManagedIdentity"
-    "Microsoft.KeyVault"
-    "Microsoft.VirtualMachineImages"
-    "Microsoft.Storage"
-)
-
-$newProviders = @()
-
-Write-Output "Checking for required Azure Resource Providers"
-foreach ($provider in $requiredProviders) {
-    Write-Output "Checking for Azure Resource Provider '$provider'"
-    $pExist = (Get-AzResourceProvider -ProviderNamespace $provider).RegistrationState[0]
-    if ($pExist -ne "Registered") {
-        Write-Output "Registering Azure Resource Provider '$provider'"
-        Register-AzResourceProvider -ProviderNamespace $provider
-        $newProviders += $provider
-    }
-}
-
-#Run around the new provider list and wait for them to register - limit this to 5 mins before timeout
-if ($newProviders.Length -gt 0) {
-    $startTime = Get-Date
-    $endTime = $startTime.AddMinutes(5)
-    while ($newProviders.Length -gt 0) {
-        Write-Output "Waiting for the new providers to be registered..."
-        Start-Sleep -Seconds 10
-
-        $newProviders = $newProviders | Where-Object {
-            $pExist = (Get-AzResourceProvider -ProviderNamespace $_).RegistrationState[0]
-            if ($pExist -eq "Registered") {
-                Write-Output "Azure Resource Provider '$_' is now registered"
-                $false
-            } else {
-                Write-Output "Azure Resource Provider '$_' is still registering"
-                $true
-            }
-        }
-
-        if ((Get-Date) -gt $endTime) {
-            Write-Error "ERROR: Timed out waiting for Azure Resource Providers to register"
-            exit 1
-        }
-    }
-}
-
-
-Write-output "All required Azure Resource Providers are registered"
-
-################################
-#Deploy the components via Bicep
-################################
-Write-Verbose "Getting current client IP address"
-$myPublicIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
-
-# deploy the Base Components
-Write-Verbose "Deploying main BaseComponents.bicep ($PSScriptRoot)"
+###############################################
+#Deploy the image specific componetns via Bicep
+###############################################
+# deploy the image Components
+Write-Verbose "Deploying main GalleryDefinitions.bicep ($PSScriptRoot)"
 $deployOutput = New-AzResourceGroupDeployment -Name "$currentTime-Deployment" `
     -ResourceGroupName $rgName `
-    -TemplateFile "$($PSScriptRoot)/$($bicepFolder)/BaseComponents.bicep" `
+    -TemplateFile "$($PSScriptRoot)/$($bicepFolder)/GalleryDefinitions.bicep" `
     -Verbose `
     -TemplateParameterObject @{
         storageAccountName = $configJson.storageName
-        #computeGalName = $configJson.computeGalleryName
+        computeGalName = $configJson.computeGalleryName
         location = $configJson.location
         containerIBScripts = $configJson.containerIBScripts
         containerIBPackages = $configJson.containerIBPackages
-        vnetAddressPrefix = $configJson.vnetAddressPrefix
-        roleDefImagesName = $configJson.roleDefImagesName
-        roleDefNetworkName = $configJson.roleDefNetworkName
-        storageFWIPAddress = $myPublicIP
+        umiName = $configJson.umiName
+        ibBuildScriptZipName = $configJson.zipFileName
     }
 
 
 if (-not $deployOutput) {
-    Write-Error "ERROR: Failed to deploy $($PSScriptRoot)/$($bicepFolder)/BaseComponents.bicep"
+    Write-Error "ERROR: Failed to deploy $($PSScriptRoot)/$($bicepFolder)/GalleryDefinitions.bicep"
     exit 1
 } else {
     #finished
-    Write-Output "Finished Bicep Deployment"
+    Write-Output "Finished GalleryDefinitions Bicep Deployment"
 }
 

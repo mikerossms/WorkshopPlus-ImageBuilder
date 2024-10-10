@@ -73,9 +73,9 @@ $scriptContainer = $configJson.containerIBScripts
 
 #Check that the storage account container exists
 Write-Output "Checking for Storage Account '$storageAccountName' in '$rgName'"
-$stContainerContext = Get-AzStorageAccount -ResourceGroupName $rgName -Name $storageAccountName | Get-AzStorageContainer -Name $softwareContainer -ErrorAction SilentlyContinue
+$stContainerContext = Get-AzStorageAccount -ResourceGroupName $rgName -Name $storageAccountName | Get-AzStorageContainer -Name $scriptContainer -ErrorAction SilentlyContinue
 if (-Not $stContainerContext) {
-    Write-Error "ERROR - Repo Storage Account / Container not found ($storageAccountName / $softwareContainer)"
+    Write-Error "ERROR - Repo Storage Account / Container not found ($storageAccountName / $scriptContainer)"
     exit 1
 }
 
@@ -89,7 +89,7 @@ if (-not (Test-Path $buildScriptsFolder)) {
  }
 
 # Compress all of the Powershell PS1 files into a single zip file
-$zipFileName = "IBScripts.zip"
+$zipFileName = $configJson.zipFileName
 $compressError = $null
 $compress = @{
     Path = "$buildScriptsFolder\\*.ps1"
