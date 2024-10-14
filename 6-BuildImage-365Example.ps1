@@ -116,6 +116,16 @@ if ($imageList.Count -gt 1) {
 
 Write-Output "Selected image builder template: $templateName"
 
+###CLEANUP OLD Templates###
+#This is an optional step, but if you dont you will ned up with a new template each time you run the script
+$templates = Get-AzImageBuilderTemplate -ResourceGroupName $imageRG
+
+#Loop through the templates and delete any that are not the current one - runs in the background
+foreach ($template in $templates) {
+    Write-Output " - Deleting old template $($template.Name)"
+    Remove-AzImageBuilderTemplate -ResourceGroupName $imageRG -Name $template.Name
+}
+
 ###START BUILD###
 
 #If all is good and doBuildImage is $true, then start building the image
