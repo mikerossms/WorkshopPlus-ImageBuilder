@@ -1,0 +1,14 @@
+{
+    "subscription": "Contoso",
+    "rgDeployName": "RG-ImageBuilderDemoContoso",
+    "location": "uksouth",
+    "storageName": "stimagebuildercomponents",
+    "containerIBScripts": "buildscripts",
+    "containerIBPackages": "software",
+    "computeGalleryName": "acg_imagebuilderimages",
+    "umiName": "umi-imagebuilder",
+    "roleDefImagesName": "Custom Role - ImageBuilderImageAdd",
+    "roleDefNetworkName": "Custom Role - ImageBuilderVnetJoin",
+    "vnetAddressPrefix": "10.254.254.0/24",
+    "zipFileName": "IBScripts.zip"
+}
