@@ -1,4 +1,19 @@
 
+<#
+.SYNOPSIS
+    Downloads example files from specified URLs.
+
+.DESCRIPTION
+    This script downloads example files from specified URLs using the Invoke-WebRequest cmdlet. It saves the downloaded 
+    files to the current directory with the specified output filenames.
+
+.EXAMPLE
+    .\DownloadExampleFiles.ps1
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+#>
+
 #Download 7Zip MSI
 $Url = "https://www.7-zip.org/a/7z2408-x64.msi"
 $Output = "7z2408-x64.msi"
