@@ -1,8 +1,8 @@
 {
-    "subscription": "Contoso",
-    "rgDeployName": "RG-ImageBuilderDemoContoso",
+    "subscription": "Enterprise Dev/Test",
+    "rgDeployName": "RG-ImageBuilder<myinitials>",
     "location": "uksouth",
-    "storageName": "stimagebuildercomponents",
+    "storageName": "stimagebuilder<myinitials>",
     "containerIBScripts": "buildscripts",
     "containerIBPackages": "software",
     "computeGalleryName": "acg_imagebuilderimages",

@@ -123,6 +123,19 @@ foreach ($template in $templates) {
     Remove-AzImageBuilderTemplate -ResourceGroupName $rgName -Name $template.Name
 }
 
+# Check that the az.imagebuilder powershell module is installed
+Write-Verbose "Checking if the Az.ImageBuilder module is installed..."
+if (-not (Get-Module -Name Az.ImageBuilder -ListAvailable)) {
+    Write-Output "Installing the Az.ImageBuilder module..."
+    try {
+        Install-Module -Name Az.ImageBuilder -Force -AllowClobber -ErrorAction Stop
+    } catch {
+        Write-Error "ERROR: Failed to install Az.ImageBuilder module."
+        exit 1
+    }
+}
+
+
 ###############################################
 #Deploy the image specific componetns via Bicep
 ###############################################

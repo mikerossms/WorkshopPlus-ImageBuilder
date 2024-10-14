@@ -113,9 +113,21 @@ if (-not (Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue)) {
     Write-Verbose "Resource group $rgName already exists."
 }
 
+# Check that the az.imagebuilder powershell module is installed
+Write-Verbose "Checking if the Az.ImageBuilder module is installed..."
+if (-not (Get-Module -Name Az.ImageBuilder -ListAvailable)) {
+    Write-Output "Installing the Az.ImageBuilder module..."
+    try {
+        Install-Module -Name Az.ImageBuilder -Force -AllowClobber -ErrorAction Stop
+    } catch {
+        Write-Error "ERROR: Failed to install Az.ImageBuilder module."
+        exit 1
+    }
+}
+
 # Get the name of the template to build.  Search for the name provided to get a list of templates and choose the lastest one
-Write-Verbose "Retrieving image builder templates in resource group $imageRG..."
-$imageTemplates = Get-AzImageBuilderTemplate -ResourceGroupName $imageRG
+Write-Verbose "Retrieving image builder templates in resource group $rgName..."
+$imageTemplates = Get-AzImageBuilderTemplate -ResourceGroupName $rgName
 $imageList = @()
 if ($imageTemplates) {
     Write-Verbose "Found the following image builder templates matching: $imageToBuild"
@@ -126,7 +138,7 @@ if ($imageTemplates) {
         }
     }
 } else {
-    Write-Error "No image builder templates found in resource group $imageRG with image name like:$imageToBuild"
+    Write-Error "No image builder templates found in resource group $rgName with image name like:$imageToBuild"
     exit 1
 }
 
@@ -157,19 +169,19 @@ if ($doBuildImage) {
     Write-Output "The image is now building.  This might take a while."
     Write-Output " - This script will continue to poll the image to check on progress."
     Write-Output " - If you wish to check on the progress you can also use the following command (not if the pipeline fails, it will NOT stop the build):"
-    Write-Output "    Get-AzImageBuilderTemplate -ImageTemplateName '$templateName' -ResourceGroupName '$imageRG' | Select-Object LastRunStatusRunState, LastRunStatusRunSubState, LastRunStatusMessage"
+    Write-Output "    Get-AzImageBuilderTemplate -ImageTemplateName '$templateName' -ResourceGroupName '$rgName' | Select-Object LastRunStatusRunState, LastRunStatusRunSubState, LastRunStatusMessage"
     Write-Output ""
 
     $start = Get-Date
     Write-Output "Build Started: $start"
 
     #Kick off the image builder
-    Start-AzImageBuilderTemplate -ResourceGroupName $imageRG -Name $templateName -NoWait
+    Start-AzImageBuilderTemplate -ResourceGroupName $rgName -Name $templateName -NoWait
 
     #while loop that will poll the get-azimagebuildertemplate command until ProvisioningState is Succeeded or Failed
     while ($true) {
         $count++
-        $image = Get-AzImageBuilderTemplate -ImageTemplateName $templateName -ResourceGroupName $imageRG
+        $image = Get-AzImageBuilderTemplate -ImageTemplateName $templateName -ResourceGroupName $rgName
         if ($image.LastRunStatusRunState -eq 'Succeeded') {
             Write-Output "Image build succeeded"
             break
@@ -196,9 +208,9 @@ if ($doBuildImage) {
 } else {
     Write-Warning "The image template was created, but the build itself was skipped"
     Write-Output "If you wish to run the build, you can use the following command:"
-    Write-Output "Start-AzImageBuilderTemplate -ResourceGroupName '$imageRG' -Name '$templateName' -NoWait"
+    Write-Output "Start-AzImageBuilderTemplate -ResourceGroupName '$rgName' -Name '$templateName' -NoWait"
     Write-Output "You can then monitor it using command:"
-    Write-Output "Get-AzImageBuilderTemplate -ImageTemplateName '$templateName' -ResourceGroupName '$imageRG' | Select-Object LastRunStatusRunState, LastRunStatusRunSubState, LastRunStatusMessage"
+    Write-Output "Get-AzImageBuilderTemplate -ImageTemplateName '$templateName' -ResourceGroupName '$rgName' | Select-Object LastRunStatusRunState, LastRunStatusRunSubState, LastRunStatusMessage"
 }
 
 Write-Output "Completed"

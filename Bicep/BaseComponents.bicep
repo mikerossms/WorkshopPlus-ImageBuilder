@@ -93,7 +93,7 @@ module Vnet 'br/public:avm/res/network/virtual-network:0.4.0' = {
 module Storage 'br/public:avm/res/storage/storage-account:0.13.2' = {
   name: 'Storage'
   params: {
-    name: storageAccountName
+    name: toLower(storageAccountName)
     location: location
     tags: tags
     kind: 'StorageV2'
