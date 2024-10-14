@@ -165,7 +165,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
           'Invoke-WebRequest -Uri "${storageRepo.properties.primaryEndpoints.blob}${containerIBScripts}/${ibBuildScriptZipName}?${storageAccountSASTokenScriptBlob}" -OutFile "${ibBuildScriptZipName}"'
           'New-Item -Path "C:\\BuildScripts" -ItemType Directory -Force'
           'Expand-Archive -Path "${ibBuildScriptZipName}" -DestinationPath "${localBuildScriptFolder}" -Force'
-          'Copy-Item "${localBuildScriptFolder}\\DeprovisingScript.ps1" -Destination "C:\\" -Force'
+          'Copy-Item "${localBuildScriptFolder}\\DeprovisioningScript.ps1" -Destination "C:\\" -Force'
         ]
       }
 
