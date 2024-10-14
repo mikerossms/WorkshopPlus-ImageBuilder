@@ -1,7 +1,8 @@
 param (
     [String]$configFilePath = "./config.json",
     [Bool]$dologin = $false,
-    [String]$bicepFolder = "./Bicep"
+    [String]$bicepFolder = "./Bicep",
+    [String]$myPublicIP = ""
 )
 
 $VerbosePreference = "Continue"
@@ -139,8 +140,21 @@ Write-output "All required Azure Resource Providers are registered"
 ################################
 #Deploy the components via Bicep
 ################################
-Write-Verbose "Getting current client IP address"
-$myPublicIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
+Write-Verbose "Checking access for storage account from IP address"
+if (-not $myPublicIP) {
+    Write-Verbose "Getting current client IP address"
+    $myPublicIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
+}
+
+if (-not $myPublicIP) {
+    Write-Error "ERROR: Failed to get the current client IP address"
+    exit 1
+}
+
+if ($myPublicIP.Length -gt 16) {
+    Write-Error "ERROR: Not an IPv4 address (ipv6 not currently supported by this script): $myPublicIP"
+    exit 1
+}
 
 # deploy the Base Components
 Write-Verbose "Deploying main BaseComponents.bicep ($PSScriptRoot)"

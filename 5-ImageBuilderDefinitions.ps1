@@ -7,9 +7,8 @@ param (
 $VerbosePreference = "Continue"
 
 # This script is for deploying the image specific components via Bicep - each image may have a different setup, different operating system etc. so this script is likely to be different for each image
-# this script does not modify the base image in any way.  this is done in the next stage when you build the image - this only deploys the Azure infra required to enable the image to be built
-
-#TODO: build the Bicep and update this script
+# this script DOES NOT start the build of the image - this only deployed the gallery, definitions and build spec.  
+# to start the build you must either do this in the next script (6-BuildImage-xx), via direct powershell/cli or via the portal
 
 ###############################
 # Read in the configuration   #

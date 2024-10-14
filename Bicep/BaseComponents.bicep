@@ -79,6 +79,8 @@ module Vnet 'br/public:avm/res/network/virtual-network:0.4.0' = {
       {
         name: 'ImageBuilderSubnet'
         addressPrefix: vnetAddressPrefix
+        privateLinkServiceNetworkPolicies: 'Disabled'   //Important - otherwise it will not build images
+        //privateEndpointNetworkPolicies: 'Disabled'
         serviceEndpoints: [
           'Microsoft.Storage'
         ]

@@ -128,13 +128,14 @@ module imageGallery 'br/public:avm/res/compute/gallery:0.7.1' = {
 }
 
 //Create the first image template (the actual content of the template including build scripts and software packages)
+//This template, once created in step 5, is build using "6-BuildImage-365Example.ps1"
 module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.4.0' = {
   name: 'ImageTemplate'
   params: {
     name: '365ExampleTemplate'
     location: location
     tags: tags
-    subnetResourceId: vnet.properties.subnets[0].id //Assumes the first subnet is the one to join
+    subnetResourceId: vnet.properties.subnets[0].id //Assumes the first subnet is the one to join - this joins the image builder service to the VNET created in BaseComponents.bicep
     distributions: [
       {
         sharedImageGalleryImageDefinitionResourceId: imageGallery.outputs.imageResourceIds[0]
@@ -148,76 +149,77 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
       sku: 'win11-24h2-avd-m365'
       version: 'latest'
     }
+    //vmSize: 'Standard_D2s_v3' - this is the default VM builder size.  Can be overridden at build stage
     managedIdentities: {
       userAssignedResourceIds: [
         umi.id
       ]
     }
-    customizationSteps: [
-      {
-        type: 'PowerShell'
-        name: 'DownloadExpandBuildScripts'
-        runElevated: true
-        inline: [
-          '$storageAccount = "${storageAccountName}"'
-          'Invoke-WebRequest -Uri "${storageRepo.properties.primaryEndpoints.blob}${containerIBScripts}/${ibBuildScriptZipName}?${storageAccountSASTokenScriptBlob}" -OutFile "${ibBuildScriptZipName}"'
-          'New-Item -Path "C:\\BuildScripts" -ItemType Directory -Force'
-          'Expand-Archive -Path "${ibBuildScriptZipName}" -DestinationPath "${localBuildScriptFolder}" -Force'
-        ]
-      }
+    // customizationSteps: [
+      // {
+      //   type: 'PowerShell'
+      //   name: 'DownloadExpandBuildScripts'
+      //   runElevated: true
+      //   inline: [
+      //     '$storageAccount = "${storageAccountName}"'
+      //     'Invoke-WebRequest -Uri "${storageRepo.properties.primaryEndpoints.blob}${containerIBScripts}/${ibBuildScriptZipName}?${storageAccountSASTokenScriptBlob}" -OutFile "${ibBuildScriptZipName}"'
+      //     'New-Item -Path "C:\\BuildScripts" -ItemType Directory -Force'
+      //     'Expand-Archive -Path "${ibBuildScriptZipName}" -DestinationPath "${localBuildScriptFolder}" -Force'
+      //   ]
+      // }
 
-      //Run the first software installer script
-      {
-        type: 'PowerShell'
-        name: 'DownloadAndRunInstallerScript1'
-        runElevated: true
-        inline: [
-          'Set-ExecutionPolicy Bypass -Scope Process -Force'
-          'C:\\BuildScripts\\BuildScript1.ps1 "${storageAccountName}" "${storageAccountSASTokenSWBlob}" "${containerIBPackages}" "${localBuildScriptFolder}"'
-        ]
-      }
+      // //Run the first software installer script
+      // {
+      //   type: 'PowerShell'
+      //   name: 'DownloadAndRunInstallerScript1'
+      //   runElevated: true
+      //   inline: [
+      //     'Set-ExecutionPolicy Bypass -Scope Process -Force'
+      //     'C:\\BuildScripts\\BuildScript1.ps1 "${storageAccountName}" "${storageAccountSASTokenSWBlob}" "${containerIBPackages}" "${localBuildScriptFolder}"'
+      //   ]
+      // }
 
-      //Restart the VM
-      {
-        type: 'WindowsRestart1'
-        restartTimeout: '30m'
-      }
+      // //Restart the VM
+      // {
+      //   type: 'WindowsRestart1'
+      //   restartTimeout: '30m'
+      // }
 
-      //Run the second software installer script
-      {
-        type: 'PowerShell'
-        name: 'DownloadAndRunInstallerScript2'
-        runElevated: true
-        inline: [
-          'Set-ExecutionPolicy Bypass -Scope Process -Force'
-          'C:\\BuildScripts\\BuildScript2.ps1 "${storageAccountName}" "${storageAccountSASTokenSWBlob}" "${containerIBPackages}" "${localBuildScriptFolder}"'
-        ]
-      }
+      // //Run the second software installer script
+      // {
+      //   type: 'PowerShell'
+      //   name: 'DownloadAndRunInstallerScript2'
+      //   runElevated: true
+      //   inline: [
+      //     'Set-ExecutionPolicy Bypass -Scope Process -Force'
+      //     'C:\\BuildScripts\\BuildScript2.ps1 "${storageAccountName}" "${storageAccountSASTokenSWBlob}" "${containerIBPackages}" "${localBuildScriptFolder}"'
+      //   ]
+      // }
 
-      //Restart the VM
-      {
-        type: 'WindowsRestart2'
-        restartTimeout: '30m'
-      }
+      // //Restart the VM
+      // {
+      //   type: 'WindowsRestart2'
+      //   restartTimeout: '30m'
+      // }
 
-      //Run windows updates
-      {
-        type: 'WindowsUpdate'
-        searchCriteria: 'IsInstalled=0'
-        filters: [
-          'exclude:$_.Title -like "*Preview*"'
-          'include:$true'
-        ]
-        updateLimit: 500
-      }
+      // //Run windows updates
+      // {
+      //   type: 'WindowsUpdate'
+      //   searchCriteria: 'IsInstalled=0'
+      //   filters: [
+      //     'exclude:$_.Title -like "*Preview*"'
+      //     'include:$true'
+      //   ]
+      //   updateLimit: 500
+      // }
 
-      //Restart the VM
-      {
-        type: 'WindowsRestart3'
-        restartTimeout: '30m'
-      }
+      // //Restart the VM
+      // {
+      //   type: 'WindowsRestart3'
+      //   restartTimeout: '30m'
+      // }
 
-    ]
+    // ]
   }
 }
 
