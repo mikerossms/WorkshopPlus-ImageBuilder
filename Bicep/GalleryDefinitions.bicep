@@ -149,7 +149,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
       sku: 'win11-24h2-avd-m365'
       version: 'latest'
     }
-    //vmSize: 'Standard_D2s_v3' - this is the default VM builder size.  Can be overridden at build stage
+    //vmSize: 'Standard_D2ds_v4' - this is the default VM builder size for a G2 image.  You can change this to a different size if required
     managedIdentities: {
       userAssignedResourceIds: [
         umi.id
@@ -182,7 +182,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
 
       //Restart the VM
       {
-        type: 'WindowsRestart1'
+        type: 'WindowsRestart'
         restartTimeout: '30m'
       }
 
@@ -199,7 +199,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
 
       // //Restart the VM
       // {
-      //   type: 'WindowsRestart2'
+      //   type: 'WindowsRestart'
       //   restartTimeout: '30m'
       // }
 
@@ -216,7 +216,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
 
       // //Restart the VM
       // {
-      //   type: 'WindowsRestart3'
+      //   type: 'WindowsRestart'
       //   restartTimeout: '30m'
       // }
 

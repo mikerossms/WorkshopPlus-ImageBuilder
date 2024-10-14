@@ -1,3 +1,28 @@
+<#
+.SYNOPSIS
+    Uploads example packages to a specified storage account.
+
+.DESCRIPTION
+    This script uploads example packages to a specified storage account. It reads configuration settings from a JSON file, 
+    optionally performs a login, and uploads the packages to the designated container in the storage account.
+
+.PARAMETER configFilePath
+    The path to the configuration file. Default is "./config.json".
+
+.PARAMETER dologin
+    Flag to determine if login is required. Default is $false.
+
+.PARAMETER examplePackageFolder
+    The path to the folder containing the example packages. Default is "./ExamplePackages".
+
+.EXAMPLE
+    .\3-UploadExamplePackages.ps1 -configFilePath "./config.json" -dologin $true examplePackageFolder "./ExamplePackages"
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+
+#>
+
 param (
     [String]$configFilePath = "./config.json",
     [String]$examplePackageFolder = "./ExamplePackages",

@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+    Configures Role-Based Access Control (RBAC) for the image builder.
+
+.DESCRIPTION
+    This script configures Role-Based Access Control (RBAC) for the image builder by assigning necessary roles to the 
+    specified service principal or managed identity. It reads configuration settings from a JSON file and applies the 
+    required permissions.
+
+.PARAMETER configFilePath
+    The path to the configuration file. Default is "./config.json".
+
+.PARAMETER dologin
+    Flag to determine if login is required. Default is $false.
+
+.EXAMPLE
+    .\2-ConfigureRBAC.ps1 -configFilePath "./config.json" -dologin $true
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+
+#>
+
 param (
     [String]$configFilePath = "./config.json",
     [Bool]$dologin = $false

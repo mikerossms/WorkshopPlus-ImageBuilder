@@ -1,8 +1,39 @@
+<#
+.SYNOPSIS
+    Starts and monitors the build process for the image.
+
+.DESCRIPTION
+    This script starts and monitors the build process for the image. It defaults to the "365ExampleTemplate" image and performs a dry run of the 
+    build process. To actually build the image, set the $doBuildImage parameter to $true.
+
+.PARAMETER configFilePath
+    The path to the configuration file. Default is "./config.json".
+
+.PARAMETER dologin
+    Flag to determine if login is required. Default is $false.
+
+.PARAMETER imageToBuild
+    The name of the image to build. Default is "365ExampleTemplate".
+
+.PARAMETER doBuildImage
+    Flag to determine if the image should actually be built. Default is $false (dry run).
+
+.PARAMETER pollingTime
+    The time interval (in seconds) for polling the build status. Default is 60 seconds.
+
+.EXAMPLE
+    .\6-BuildImage-365Example.ps1 -configFilePath "./config.json" -dologin $true -imageToBuild "CustomImageTemplate" -doBuildImage $true -pollingTime 30
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+#>
+
 param (
     [String]$configFilePath = "./config.json",
     [Bool]$dologin = $false,
     [String]$imageToBuild = "365ExampleTemplate",
-    [Bool]$doBuildImage = $false
+    [Bool]$doBuildImage = $false,
+    [int]$pollingTime = 60
 )
 
 $VerbosePreference = "Continue"
@@ -95,7 +126,8 @@ if ($imageTemplates) {
         }
     }
 } else {
-    Write-Warning "No image builder templates found in resource group $imageRG with image name like:$imageToBuild ."
+    Write-Error "No image builder templates found in resource group $imageRG with image name like:$imageToBuild"
+    exit 1
 }
 
 # Check if there is more than 1 image returned
@@ -115,16 +147,6 @@ if ($imageList.Count -gt 1) {
 }
 
 Write-Output "Selected image builder template: $templateName"
-
-###CLEANUP OLD Templates###
-#This is an optional step, but if you dont you will ned up with a new template each time you run the script
-$templates = Get-AzImageBuilderTemplate -ResourceGroupName $imageRG
-
-#Loop through the templates and delete any that are not the current one - runs in the background
-foreach ($template in $templates) {
-    Write-Output " - Deleting old template $($template.Name)"
-    Remove-AzImageBuilderTemplate -ResourceGroupName $imageRG -Name $template.Name
-}
 
 ###START BUILD###
 

@@ -1,8 +1,37 @@
+<#
+.SYNOPSIS
+    Deploys image-specific components via Bicep.
+
+.DESCRIPTION
+    This script is used to deploy the image-specific components via Bicep. Each image may have a different setup, different operating system, etc., so this script is likely to be different for each image.
+    Note that this script DOES NOT start the build of the image. It only deploys the gallery, definitions, and build spec. To start the build, you must either do this in the next script (6-BuildImage-xx), via direct PowerShell/CLI, or via the portal.
+
+.PARAMETER configFilePath
+    The path to the configuration file. Default is "./config.json".
+
+.PARAMETER dologin
+    Flag to determine if login is required. Default is $false.
+
+.PARAMETER bicepFolder
+    The path to the Bicep folder. Default is "./Bicep".
+
+.PARAMETER buildTimeout
+    Timeout for the build process in minutes. Default is 180 minutes.
+
+.EXAMPLE
+    .\5-ImageBuilderDefinitions.ps1 -configFilePath "./config.json" -dologin $true -bicepFolder "./Bicep" -buildTimeout 180
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+#>
+
 param (
-    [String]$configFilePath = "./config.json",
-    [Bool]$dologin = $false,
-    [String]$bicepFolder = "./Bicep"
+    [String]$configFilePath = "./config.json", # Path to the configuration file
+    [Bool]$dologin = $false,                   # Flag to determine if login is required
+    [String]$bicepFolder = "./Bicep",          # Path to the Bicep folder
+    [Int]$buildTimeout = 180                   # Timeout for the build process in minutes
 )
+
 
 $VerbosePreference = "Continue"
 
@@ -83,6 +112,16 @@ if (-not (Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue)) {
 
 #Get the current time in hhmmss format
 $currentTime = Get-Date -Format "HHmmss"
+
+###CLEANUP OLD Templates###
+#This is an optional step, but if you dont you will ned up with a new template each time you run the script
+$templates = Get-AzImageBuilderTemplate -ResourceGroupName $rgName
+
+#Loop through the templates and delete any that are not the current one - runs in the background
+foreach ($template in $templates) {
+    Write-Output " - Deleting old template $($template.Name)"
+    Remove-AzImageBuilderTemplate -ResourceGroupName $rgName -Name $template.Name
+}
 
 ###############################################
 #Deploy the image specific componetns via Bicep
