@@ -1,10 +1,24 @@
+<#
+.SYNOPSIS
+    Validates the environment by running a series of tests.
+
+.DESCRIPTION
+    This script validates the environment by running a series of tests to ensure that required commands exist and work as 
+    expected. It sets global preferences for information, verbose, and error actions, and tracks the overall success or 
+    failure of the tests.
+
+.NOTES
+    This is an example only.  It is not a production script.  Microsoft accepts no liability for the content or use of this script.
+
+#>
+
 $InformationPreference = 'Continue'
 $VerbosePreference = 'SilentlyContinue';
 $ErrorActionPreference = "Stop"
 
 $script:hasFailed = $false
 
-Write-Output "Running the Installer Script"
+Write-Output "Running the Validation Script"
 
 #Set a global - this is used to determine if any of the tests have failed
 #Assume a failure state, unless specifically changed to FALSE
