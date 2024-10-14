@@ -13,6 +13,7 @@ Before you begin, ensure you have the following:
 - An Azure subscription
 - PowerShell installed
 - Azure Powershell Bicep installed - [Download](https://github.com/Azure/bicep/releases/latest/download/bicep-setup-win-x64.exe) - ([Reference](https://learn.microsoft.com/en-gb/azure/azure-resource-manager/bicep/install#install-manually))
+- Install the Azure AZ ImageBuilder module - `Install-Module -Name Az.ImageBuilder -Force -AllowClobber`
 - Required permissions to create resources in your Azure subscription
 - A valid configuration file (`config.json`)
 
