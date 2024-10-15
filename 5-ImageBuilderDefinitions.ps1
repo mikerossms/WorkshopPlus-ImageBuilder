@@ -130,8 +130,13 @@ if (-not (Get-Module -Name Az.ImageBuilder -ListAvailable)) {
     try {
         Install-Module -Name Az.ImageBuilder -Force -AllowClobber -ErrorAction Stop
     } catch {
-        Write-Error "ERROR: Failed to install Az.ImageBuilder module."
-        exit 1
+        Write-Warning "Unable to install Az.ImageBuilder module.  Trying with CurrentUser scope"
+        try {
+            Install-Module -Name Az.ImageBuilder -Force -scope CurrentUser -AllowClobber -ErrorAction Stop
+        } catch {
+            Write-Error "ERROR: Failed to install Az.ImageBuilder module - cannot continue."
+            exit 1
+        }
     }
 }
 

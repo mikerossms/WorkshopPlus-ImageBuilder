@@ -5,10 +5,10 @@
     "storageName": "stimagebuilder<myinitials>",
     "containerIBScripts": "buildscripts",
     "containerIBPackages": "software",
-    "computeGalleryName": "acg_imagebuilderimages",
+    "computeGalleryName": "acg_imagebuilderimages<myinitials>",
     "umiName": "umi-imagebuilder",
-    "roleDefImagesName": "Custom Role - ImageBuilderImageAdd",
-    "roleDefNetworkName": "Custom Role - ImageBuilderVnetJoin",
+    "roleDefImagesName": "Custom Role - ImageBuilderImageAdd<myinitials>",
+    "roleDefNetworkName": "Custom Role - ImageBuilderVnetJoin<myinitials>",
     "vnetAddressPrefix": "10.254.254.0/24",
     "zipFileName": "IBScripts.zip"
 }

@@ -106,6 +106,11 @@ if (-not (Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue)) {
     Write-Verbose "Resource group $rgName already exists."
 }
 
+if (-not (Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue)) {
+    Write-Error "ERROR: Failed to create resource group $rgName"
+    exit 1
+}
+
 #Get the current time in hhmmss format
 $currentTime = Get-Date -Format "HHmmss"
 
