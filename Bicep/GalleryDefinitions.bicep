@@ -44,18 +44,18 @@ param imageDef1 object = {
   hyperVGeneration: 'V2'
 
   // windows 11 without office (standalone VM)
-  identifier: {
-    offer: 'windows-11'
-    publisher: 'MicrosoftWindowsDesktop'
-    sku: 'win11-24h2-ent'
-  }
+  // identifier: {
+  //   offer: 'windows-11'
+  //   publisher: 'MicrosoftWindowsDesktop'
+  //   sku: 'win11-24h2-ent'
+  // }
 
   // windows 11 with office multisession for AVD
-  // identifier: {
-  //   offer: 'office-365'
-  //   publisher: 'MicrosoftWindowsDesktop'
-  //   sku: 'win11-24h2-avd-m365'
-  // }
+  identifier: {
+    offer: 'office-365'
+    publisher: 'MicrosoftWindowsDesktop'
+    sku: 'win11-24h2-avd-m365'
+  }
 
   // windows server 2022
   // identifier: {
@@ -159,9 +159,9 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
     ]
     imageSource: {
       type: 'PlatformImage'
-      publisher: imageDef1.identifier.publisher
-      offer: imageDef1.identifier.offer
-      sku: imageDef1.identifier.sku
+      offer: 'office-365'
+      publisher: 'MicrosoftWindowsDesktop'
+      sku: 'win11-24h2-avd-m365'
       version: 'latest'
     }
     //vmSize: 'Standard_D2ds_v4' - this is the default VM builder size for a G2 image.  You can change this to a different size if required
