@@ -164,7 +164,7 @@ module imageTemplate 'br/public:avm/res/virtual-machine-images/image-template:0.
       sku: 'win11-24h2-avd-m365'
       version: 'latest'
     }
-    //vmSize: 'Standard_D2ds_v4' - this is the default VM builder size for a G2 image.  You can change this to a different size if required
+    vmSize: 'Standard_D2ads_v5'
     managedIdentities: {
       userAssignedResourceIds: [
         umi.id
